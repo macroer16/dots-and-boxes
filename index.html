@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1d2723" />
+    <title>Dots &amp; Boxes — against a minimax AI</title>
+    <meta name="description" content="Play Dots & Boxes against an AI with three levels. Hard searches the rest of the game with alpha-beta pruning and plays the long chain rule." />
+    <link rel="icon" href="/favicon.svg" />
+  </head>
+  <body>
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <filter id="chalk" filterUnits="userSpaceOnUse" x="-100" y="-100" width="1200" height="1200">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <pattern id="hatch-0" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(40)">
+        <line x1="0" y1="0" x2="0" y2="9" style="stroke: var(--p0)" stroke-width="3" opacity=".55" />
+      </pattern>
+      <pattern id="hatch-1" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-40)">
+        <line x1="0" y1="0" x2="0" y2="9" style="stroke: var(--p1)" stroke-width="3" opacity=".55" />
+      </pattern>
+    </svg>
+
+    <main class="wrap">
+      <header>
+        <h1>Dots <span>&amp;</span> Boxes</h1>
+        <p class="sub">Draw a line between two dots. Close a box and you go again. Most boxes wins.</p>
+      </header>
+
+      <section class="board-wrap">
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+        <svg id="board" role="application" aria-label="Game board. Use the arrow keys to pick a line and Enter to draw it." tabindex="0"></svg>
+        <p class="keys">Click a line, or use <kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> then <kbd>Enter</kbd> · <kbd>H</kbd> hint · <kbd>U</kbd> undo</p>
+      </section>
+
+      <aside class="panel">
+        <div class="scores">
+          <div class="score p0"><span id="name0">You</span><b id="score0">0</b></div>
+          <div class="score p1"><span id="name1">AI</span><b id="score1">0</b></div>
+        </div>
+
+        <div class="controls">
+          <label>Board
+            <select id="size">
+              <option value="3">3 × 3 (quick)</option>
+              <option value="4" selected>4 × 4</option>
+              <option value="5">5 × 5 (experts)</option>
+            </select>
+          </label>
+          <label>Opponent
+            <select id="opponent">
+              <option value="easy">AI: Easy</option>
+              <option value="medium">AI: Medium</option>
+              <option value="hard" selected>AI: Hard</option>
+              <option value="friend">A friend (same screen)</option>
+            </select>
+          </label>
+          <label>Who starts
+            <select id="first">
+              <option value="0">You</option>
+              <option value="1">Them</option>
+            </select>
+          </label>
+          <div class="buttons">
+            <button id="new" class="primary">New game</button>
+            <button id="hint">Hint</button>
+            <button id="undo">Undo</button>
+          </div>
+        </div>
+
+        <section class="thinking">
+          <h2>What the AI is thinking</h2>
+          <p id="why">Waiting for the first move.</p>
+          <p id="stats" class="small"></p>
+        </section>
+
+        <section class="record">
+          <h2>Your record</h2>
+          <p id="record" class="small"></p>
+        </section>
+
+        <details class="how">
+          <summary>How does the Hard AI play?</summary>
+          <ol>
+            <li><b>Never hands you a box early.</b> While there are "safe" lines (ones that don't put a third side on a box), it only plays those.</li>
+            <li><b>Searches to the end.</b> Once the board is small enough, it tries every possible rest of the game using <i>negamax with alpha-beta pruning</i>. It skips any line that can't beat its best so far, and a <i>transposition table</i> remembers positions it has already solved.</li>
+            <li><b>Plays like an expert without being told how.</b> The search finds the <i>long chain rule</i> and <i>double-dealing</i> on its own. Sometimes it leaves you the last two boxes of a chain on purpose, so you're forced to open the next, longer one.</li>
+          </ol>
+          <p class="small">Easy grabs boxes but plays anywhere else. Medium plays safe lines, then gives away the smallest chain it can.</p>
+        </details>
+
+        <footer class="small">
+          Built by <a href="https://victor-benson.vercel.app">Victor Benson</a> ·
+          <a href="https://github.com/macroer16/dots-and-boxes">Code</a>
+        </footer>
+      </aside>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
